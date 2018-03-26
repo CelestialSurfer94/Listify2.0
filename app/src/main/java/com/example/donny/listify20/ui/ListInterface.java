@@ -50,21 +50,30 @@ public class ListInterface extends AppCompatActivity {
         setContentView(R.layout.activity_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        data = new ArrayList<>();
         recView = (RecyclerView) findViewById(R.id.rec_list_activity);
         adapter = new RecAdapter(this, data, this);
         prefs = this.getSharedPreferences("mainPrefs", Context.MODE_PRIVATE);
         ID = getIntent().getIntExtra("requestCode", -1);
+        //need to use preferences here
         title = getIntent().getStringExtra(ID + "Title");
         size = getIntent().getIntExtra(ID + "Size", 0);
-        data = new ArrayList<>();
         setTitle(title);
+        if (getIntent().getBooleanExtra("firstStart", false)) { // ?WTf
+            changeTitleDialog();
+            //tempSave();
+        }
+
         for (int i = 0; i < size; i++) { //grab all saved items in list
             String str = prefs.getString(ID + "Text" + i, "");
             //getIntent().getStringExtra(ID + "Text" + i);
             Boolean isChecked = prefs.getBoolean(ID + "Bool" + i, false);
             ListItem current = new ListItem(str, isChecked);
             data.add(current);
+            adapter.notifyItemInserted(i);
         }
+
+
         toolbar.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -73,7 +82,7 @@ public class ListInterface extends AppCompatActivity {
             }
         });
 
-
+        //
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_new_item);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,12 +90,6 @@ public class ListInterface extends AppCompatActivity {
                 add();
             }
         });
-
-
-        if (getIntent().getBooleanExtra("firstStart", false)) { // ?WTf
-            changeTitleDialog();
-            //tempSave();
-        }
 
         ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(adapter);
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
@@ -109,13 +112,16 @@ public class ListInterface extends AppCompatActivity {
         recView.smoothScrollToPosition(Math.min(pos + offset + 1, adapter.getItemCount()));
         //getIntent().putExtra(ID + "Size", adapter.getItemCount());
         prefs.edit().putInt(ID + "Size", adapter.getItemCount()).apply();
+
+        //keyboard management
         View curView = this.getCurrentFocus();
         if (curView != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
             imm.showSoftInput(curView, 0); //TODO
         }
-        //prefs.edit().putInt("numItems",adapter.getItemCount());
-        //tempSave();
+        prefs.edit().putInt(ID +"numItems", adapter.getItemCount()).apply();
+        size++;
+        tempSave();
     }
 
     public void remove() {
@@ -129,7 +135,7 @@ public class ListInterface extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
-        //save();
+        save();
     }
 
     public void changeTitleDialog() {

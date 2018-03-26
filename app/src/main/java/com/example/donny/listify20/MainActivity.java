@@ -14,10 +14,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.example.donny.listify20.adapter.ItemTouchHelperCallback;
 import com.example.donny.listify20.adapter.MainAdapter;
 import com.example.donny.listify20.adapter.MainTouchHelperCallback;
 import com.example.donny.listify20.model.ListItem;
@@ -42,10 +40,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         prefs = this.getSharedPreferences("mainPrefs", Context.MODE_PRIVATE);
-        prefs.edit().clear().apply();
+        //prefs.edit().clear().apply();
         data = new ArrayList<>();
-
-
         numLists = prefs.getInt("numLists", 0);
         titles = new ArrayList<>();
         for (int i = 0; i < numLists; i++) {
@@ -69,11 +65,13 @@ public class MainActivity extends AppCompatActivity {
         ItemTouchHelper.Callback callback = new MainTouchHelperCallback(adapter);
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recView);
+
+        //initialize floating action button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_main);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                add();
+                addNewList();
             }
         });
     }
@@ -85,26 +83,25 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void add() { //add new list to view
+    //add new list to main activity
+    public void addNewList() { //addNewList new list to view
         ListItem newItem = new ListItem("",false);
         ArrayList<ListItem>  newList = new ArrayList<ListItem>();
-        //newList.add(newItem);
+        newList.add(newItem);
         adapter.notifyItemInserted(numLists);
 
         Intent i = new Intent(this, ListInterface.class);
-/*
+
         i.putExtra(numLists + "Size", 1);
         i.putExtra(numLists + "Text" + 0, "");
         i.putExtra(numLists + "Bool" + 0, false);
         i.putExtra("requestCode", numLists);
         i.putExtra(numLists + "Title", "New List!!");
         i.putExtra("firstStart", true);
-        data.add(newList); // was (0,newList)
-        titles.add("New List!!");
-        int temp = numLists;
-        prefs.edit().putInt("numLists",++numLists).apply();
-        */
 
+        data.add(newList);
+        titles.add("New List!!");
+        prefs.edit().putInt("numLists",++numLists).apply();
         startActivityForResult(i, numLists);
     }
 

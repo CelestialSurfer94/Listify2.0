@@ -118,7 +118,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 public void onCheckedChanged(CompoundButton button, boolean isChecked) {
                     int pos = getAdapterPosition();
                     data.get(getAdapterPosition()).setChecked(isChecked);
-                    listInterface.tempSave();
+                    listInterface.tempSave(); //TODO change to only update the current item, not the entire list here
                 }
             });
             text = (EditText) itemView.findViewById(R.id.editText);
@@ -129,10 +129,10 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
             text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                    if(actionId == EditorInfo.IME_ACTION_DONE){ //TODO WTF?
+                    if(actionId == EditorInfo.IME_ACTION_DONE){
                         //Toast.makeText(textView.getContext(), "TEST", Toast.LENGTH_SHORT).show();
                         listInterface.add();
-                        //listInterface.tempSave();
+                        //listInterface.tempSave(); //TODO same as above
                         return true;
                     }
                     return true;
