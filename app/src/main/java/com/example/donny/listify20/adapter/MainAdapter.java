@@ -105,6 +105,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
         int fromSize = data.get(fromPosition).size();
         int toSize = data.get(toPosition).size();
 
+        //wait does this work?
         for (int i = 0; i < fromSize; i++) {
             ListItem cur = fromList.get(i);
             prefs.edit().putString(toPosition+"Text"+i,cur.getText()).apply();

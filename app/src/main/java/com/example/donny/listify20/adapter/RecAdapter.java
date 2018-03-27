@@ -69,13 +69,14 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         data.add(item);
         if(item.isFocused()){
         }
+        Toast.makeText(listInterface, "recAdapter Add was called", Toast.LENGTH_SHORT).show();
         //listInterface.tempSave();
     }
 
     public void remove(int position){
         data.remove(position);
         notifyItemRemoved(position);
-        //listInterface.tempSave();
+        listInterface.remove(position);
 
     }
     public boolean onItemMove(int fromPosition, int toPosition) {
@@ -118,7 +119,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 public void onCheckedChanged(CompoundButton button, boolean isChecked) {
                     int pos = getAdapterPosition();
                     data.get(getAdapterPosition()).setChecked(isChecked);
-                    listInterface.tempSave(); //TODO change to only update the current item, not the entire list here
+                    listInterface.saveSingle(pos); //TODO change to only update the current item, not the entire list here
                 }
             });
             text = (EditText) itemView.findViewById(R.id.editText);
@@ -161,7 +162,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            // no op
+            listInterface.saveSingle(position);
         }
     }
 }

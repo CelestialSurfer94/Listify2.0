@@ -91,27 +91,31 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyItemInserted(numLists);
 
         Intent i = new Intent(this, ListInterface.class);
+        i.putExtra("firstStart", true);
+        //prefs.edit().putInt("ID",numLists).apply();
+        i.putExtra("requestCode", numLists);
 
+
+/*
         i.putExtra(numLists + "Size", 1);
         i.putExtra(numLists + "Text" + 0, "");
         i.putExtra(numLists + "Bool" + 0, false);
-        i.putExtra("requestCode", numLists);
         i.putExtra(numLists + "Title", "New List!!");
-        i.putExtra("firstStart", true);
+        */
 
         data.add(newList);
         titles.add("New List!!");
         prefs.edit().putInt("numLists",++numLists).apply();
-        startActivityForResult(i, numLists);
+        startActivityForResult(i, numLists -1);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == RESULT_OK) { //changed: was && data != null
             super.onActivityResult(requestCode, resultCode, data);
-            Bundle MBundle = data.getExtras();
-            String title = MBundle.getString(requestCode + "Title");
+            String title = prefs.getString(requestCode + "Title", "uh oh?");
             titles.set(requestCode, title);
+            adapter.notifyDataSetChanged();
         }
     }
 

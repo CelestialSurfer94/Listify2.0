@@ -2,7 +2,6 @@ package com.example.donny.listify20.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.View;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +19,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donny.listify20.R;
@@ -29,10 +26,7 @@ import com.example.donny.listify20.adapter.ItemTouchHelperCallback;
 import com.example.donny.listify20.adapter.RecAdapter;
 import com.example.donny.listify20.model.ListItem;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 public class ListInterface extends AppCompatActivity {
     private java.util.List<ListItem> data;
@@ -56,17 +50,17 @@ public class ListInterface extends AppCompatActivity {
         prefs = this.getSharedPreferences("mainPrefs", Context.MODE_PRIVATE);
         ID = getIntent().getIntExtra("requestCode", -1);
         //need to use preferences here
-        title = getIntent().getStringExtra(ID + "Title");
-        size = getIntent().getIntExtra(ID + "Size", 0);
+        title = prefs.getString(ID +"Title", "NEW LIST!!");
+        size = prefs.getInt(ID +"Size",0);
         setTitle(title);
-        if (getIntent().getBooleanExtra("firstStart", false)) { // ?WTf
+        if (getIntent().getBooleanExtra("firstStart", false)) {
             changeTitleDialog();
+            prefs.edit().putString(ID + "Title", getTitle().toString()).apply();
             //tempSave();
         }
 
         for (int i = 0; i < size; i++) { //grab all saved items in list
             String str = prefs.getString(ID + "Text" + i, "");
-            //getIntent().getStringExtra(ID + "Text" + i);
             Boolean isChecked = prefs.getBoolean(ID + "Bool" + i, false);
             ListItem current = new ListItem(str, isChecked);
             data.add(current);
@@ -121,11 +115,14 @@ public class ListInterface extends AppCompatActivity {
         }
         prefs.edit().putInt(ID +"numItems", adapter.getItemCount()).apply();
         size++;
-        tempSave();
+        //tempSave();
     }
 
-    public void remove() {
-
+    public void remove(int pos) {
+        prefs.edit().remove(ID + "Text" +pos).apply();
+        prefs.edit().remove(ID + "Bool" + pos).apply();
+        prefs.edit().putInt(ID+"Size",adapter.getItemCount()).apply();
+        size--;
     }
 
     @Override
@@ -135,21 +132,20 @@ public class ListInterface extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
-        save();
+        saveAndExit();
     }
 
     public void changeTitleDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Insert list name");
 
-// Set up the input
+        // Set up the input
         final EditText input = new EditText(this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
-
-// Set up the buttons
+        // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -170,13 +166,13 @@ public class ListInterface extends AppCompatActivity {
         input.requestFocus();
     }
 
-    private void save() {
-        tempSave();
+    private void saveAndExit() {
+        fullSave();
         finish();
     }
 
-    public void tempSave() {
-        //List<ListItem> list = adapter.getData();
+
+    public void fullSave() {
         for (int i = 0; i < size; i++) {
             ListItem current = data.get(i);
             prefs.edit().putString(ID + "Text" + i, current.getText()).apply();
@@ -185,6 +181,15 @@ public class ListInterface extends AppCompatActivity {
         prefs.edit().putInt(ID + "Size", size).apply();
         prefs.edit().putString(ID + "Title", title).apply();
         setResult(RESULT_OK);
+    }
+
+    public void saveSingle(int pos){
+        ListItem current = data.get(pos);
+        prefs.edit().putString(ID + "Text" + pos, current.getText()).apply();
+        prefs.edit().putBoolean(ID + "Bool" + pos, current.isChecked()).apply();
+        prefs.edit().putInt(ID + "Size", size).apply();
+        //List<ListItem> list = adapter.getData();
+
     }
 
     @Override
@@ -215,8 +220,6 @@ public class ListInterface extends AppCompatActivity {
                         }
                     }).show();
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 }
