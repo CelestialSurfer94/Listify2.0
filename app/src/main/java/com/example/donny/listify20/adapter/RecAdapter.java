@@ -3,6 +3,7 @@ package com.example.donny.listify20.adapter;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
@@ -91,6 +92,8 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                     Collections.swap(data, i, i - 1);
                 }
             }
+            listInterface.saveSingle(fromPosition);
+            listInterface.saveSingle(toPosition);
             notifyItemMoved(fromPosition, toPosition);
         }
         return true;
@@ -119,7 +122,13 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 public void onCheckedChanged(CompoundButton button, boolean isChecked) {
                     int pos = getAdapterPosition();
                     data.get(getAdapterPosition()).setChecked(isChecked);
+                    if(isChecked) {
+                        text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    } else {
+                        text.setPaintFlags(text.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    }
                     listInterface.saveSingle(pos); //TODO change to only update the current item, not the entire list here
+
                 }
             });
             text = (EditText) itemView.findViewById(R.id.editText);

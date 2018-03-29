@@ -85,25 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
     //add new list to main activity
     public void addNewList() { //addNewList new list to view
-        ListItem newItem = new ListItem("",false);
-        ArrayList<ListItem>  newList = new ArrayList<ListItem>();
-        newList.add(newItem);
-        adapter.notifyItemInserted(numLists);
-
         Intent i = new Intent(this, ListInterface.class);
         i.putExtra("firstStart", true);
-        //prefs.edit().putInt("ID",numLists).apply();
         i.putExtra("requestCode", numLists);
-
-
-/*
-        i.putExtra(numLists + "Size", 1);
-        i.putExtra(numLists + "Text" + 0, "");
-        i.putExtra(numLists + "Bool" + 0, false);
-        i.putExtra(numLists + "Title", "New List!!");
-        */
-
-        data.add(newList);
         titles.add("New List!!");
         prefs.edit().putInt("numLists",++numLists).apply();
         startActivityForResult(i, numLists -1);
@@ -115,6 +99,21 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
             String title = prefs.getString(requestCode + "Title", "uh oh?");
             titles.set(requestCode, title);
+            Bundle Mbundle = data.getExtras();
+            int size = Mbundle.getInt("Size");
+            //int size = data.getIntExtra("Size",0);
+            ArrayList<ListItem>  newList = new ArrayList<ListItem>();
+            for (int i = 0; i <size ; i++) {
+                String curStr = prefs.getString(requestCode+"Text"+i,"errorOnResult");
+                Boolean curBool = prefs.getBoolean(requestCode+"Bool"+i, false);
+                ListItem cur = new ListItem(curStr, curBool);
+                newList.add(cur);
+            }
+            if(requestCode < this.data.size()){
+                this.data.set(requestCode, newList);
+            } else {
+                this.data.add(newList);
+            }
             adapter.notifyDataSetChanged();
         }
     }

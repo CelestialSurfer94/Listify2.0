@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +18,10 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donny.listify20.R;
@@ -27,6 +30,7 @@ import com.example.donny.listify20.adapter.RecAdapter;
 import com.example.donny.listify20.model.ListItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListInterface extends AppCompatActivity {
     private java.util.List<ListItem> data;
@@ -113,7 +117,7 @@ public class ListInterface extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
             imm.showSoftInput(curView, 0); //TODO
         }
-        prefs.edit().putInt(ID +"numItems", adapter.getItemCount()).apply();
+        //prefs.edit().putInt(ID +"numItems", adapter.getItemCount()).apply();
         size++;
         //tempSave();
     }
@@ -159,10 +163,22 @@ public class ListInterface extends AppCompatActivity {
                 dialog.cancel();
             }
         });
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
-        //tempSave();
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if(actionId == EditorInfo.IME_ACTION_DONE){
+                    //Toast.makeText(textView.getContext(), "TEST", Toast.LENGTH_SHORT).show();
+                    title = input.getText().toString();
+                    setTitle(title);
+                    dialog.cancel();
+                    return true;
+                }
+                return true;
+            }
+        });
         input.requestFocus();
     }
 
@@ -173,14 +189,17 @@ public class ListInterface extends AppCompatActivity {
 
 
     public void fullSave() {
+        List<ListItem> returnData = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             ListItem current = data.get(i);
             prefs.edit().putString(ID + "Text" + i, current.getText()).apply();
             prefs.edit().putBoolean(ID + "Bool" + i, current.isChecked()).apply();
+            //returnData.add(current);
         }
+        getIntent().putExtra("Size", size);
         prefs.edit().putInt(ID + "Size", size).apply();
         prefs.edit().putString(ID + "Title", title).apply();
-        setResult(RESULT_OK);
+        setResult(RESULT_OK, getIntent());
     }
 
     public void saveSingle(int pos){

@@ -9,11 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.example.donny.listify20.R;
 import com.example.donny.listify20.model.ListItem;
 import com.example.donny.listify20.ui.ListInterface;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -81,7 +79,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
         //notifyItemRangeChanged(position,getItemCount());
     }
     public boolean onItemMove(int fromPosition, int toPosition) {
-        swapPrefs(fromPosition,toPosition);
         if (fromPosition < data.size() && toPosition < data.size()) {
             if (fromPosition < toPosition) {
                 for (int i = fromPosition; i < toPosition; i++) {
@@ -92,36 +89,48 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
                     Collections.swap(data, i, i - 1);
                 }
             }
+            swapPrefs(fromPosition,toPosition);
             notifyItemMoved(fromPosition, toPosition);
             //notifyDataSetChanged();
         }
         return true;
     }
 
-
-    private void swapPrefs(int fromPosition, int toPosition){ //// TODO: 9/21/17  
+    private void swapPrefs(int fromPosition, int toPosition){ //todo error checking/handling
         ArrayList<ListItem> fromList = data.get(fromPosition);
         ArrayList<ListItem> toList = data.get(toPosition);
         int fromSize = data.get(fromPosition).size();
         int toSize = data.get(toPosition).size();
 
         //wait does this work?
-        for (int i = 0; i < fromSize; i++) {
-            ListItem cur = fromList.get(i);
+        for (int i = 0; i < toSize; i++) {
+            ListItem cur = toList.get(i);
             prefs.edit().putString(toPosition+"Text"+i,cur.getText()).apply();
             prefs.edit().putBoolean(toPosition+"Bool"+i, cur.isChecked()).apply();
         }
 
-        for (int i = 0; i < toSize ; i++) {
-            ListItem cur = toList.get(i);
+        for (int i = 0; i < fromSize; i++) {
+            ListItem cur = fromList.get(i);
             prefs.edit().putString(fromPosition+"Text"+i,cur.getText()).apply();
             prefs.edit().putBoolean(fromPosition+"Bool"+i,cur.isChecked()).apply();
+        }
+
+        if(fromSize > toSize){
+            for (int i = toSize; i < fromSize; i++) {
+                prefs.edit().remove(toPosition+"Text"+i).apply();
+                prefs.edit().remove(toPosition+"Bool"+i).apply();
+            }
+        } else if(toSize > fromSize){
+            for(int i = fromSize; i < toSize; i++){
+                prefs.edit().remove(fromPosition+"Text"+i).apply();
+                prefs.edit().remove(fromPosition+"Bool"+i).apply();
+            }
         }
         String fromTitle = prefs.getString(fromPosition+"Title","YOU FUCKED SOMETHING UP");
         prefs.edit().putString(fromPosition+"Title",titles.get(toPosition)).apply();
         prefs.edit().putString(toPosition+"Title",fromTitle).apply();
-        prefs.edit().putInt(fromPosition+"Size",toSize).apply();
-        prefs.edit().putInt(toPosition+"Size",fromSize).apply();
+        prefs.edit().putInt(fromPosition+"Size",fromSize).apply();
+        prefs.edit().putInt(toPosition+"Size",toSize).apply();
         Collections.swap(titles,fromPosition,toPosition);
 
     }
