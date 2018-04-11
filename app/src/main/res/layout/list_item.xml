@@ -5,11 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft= "16dp"
-    android:id="@+id/root">
+    android:id="@+id/root"
+    android:background="#ffffff">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#ffffff">
+
 
         <CheckBox
             android:id="@+id/checkBox"
@@ -30,7 +33,8 @@
             android:inputType="text"
             android:maxLines="1"
             android:padding="10dp"
-            android:textColor="#eeebac" />
+            android:background="#ffffff"
+            android:textColor="@color/cardview_dark_background" />
     </RelativeLayout>
 
 </LinearLayout>

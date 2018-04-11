@@ -3,6 +3,7 @@ package com.example.donny.listify20.adapter;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -42,10 +43,12 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
     private MyViewHolder holder;
     private ListInterface listInterface;
 
+
     public RecAdapter(Context context, List<ListItem> data, ListInterface listInterface){
         inflator = LayoutInflater.from(context);
         this.data = data;
         this.listInterface = listInterface;
+
     }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

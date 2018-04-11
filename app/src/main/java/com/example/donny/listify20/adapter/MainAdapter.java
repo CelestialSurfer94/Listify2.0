@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +45,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.title.setText(titles.get(position));
+        holder.title.setPaintFlags(holder.title.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         final MainAdapter.MyViewHolder hol = holder;
-        holder.listNumber.setText((position+1)+"");
+        holder.listNumber.setText((position+1)+")");
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,6 +62,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
                 ((Activity) context).startActivityForResult(intent,pos);
             }
         });
+        holder.test.setText("Items: "+ data.get(position).size());
+        holder.numberCompleted.setText("Completed: " +prefs.getInt(position+"NumComplete",0));
     }
 
     public void remove(int position){
@@ -149,10 +153,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView listNumber;
+        TextView test;
+        TextView numberCompleted;
         public MyViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.main_textView);
             listNumber = (TextView)itemView.findViewById(R.id.main_listNumber);
+            test = (TextView)itemView.findViewById(R.id.main_text1View);
+            numberCompleted = (TextView)itemView.findViewById(R.id.main_numberCompleted);
         }
     }
 }

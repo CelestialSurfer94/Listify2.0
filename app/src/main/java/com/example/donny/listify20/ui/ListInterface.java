@@ -59,7 +59,7 @@ public class ListInterface extends AppCompatActivity {
         setTitle(title);
         if (getIntent().getBooleanExtra("firstStart", false)) {
             changeTitleDialog();
-            prefs.edit().putString(ID + "Title", getTitle().toString()).apply();
+            //prefs.edit().putString(ID + "Title", getTitle().toString()).apply();
             //tempSave();
         }
 
@@ -154,6 +154,7 @@ public class ListInterface extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 title = input.getText().toString();
+                prefs.edit().putString(ID+"Title",title).apply();
                 setTitle(title);
             }
         });
@@ -163,6 +164,8 @@ public class ListInterface extends AppCompatActivity {
                 dialog.cancel();
             }
         });
+
+        //initialize alert dialog window
         final AlertDialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
@@ -170,9 +173,9 @@ public class ListInterface extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
-                    //Toast.makeText(textView.getContext(), "TEST", Toast.LENGTH_SHORT).show();
                     title = input.getText().toString();
                     setTitle(title);
+                    prefs.edit().putString(ID+"Title",title).apply();
                     dialog.cancel();
                     return true;
                 }
@@ -190,13 +193,18 @@ public class ListInterface extends AppCompatActivity {
 
     public void fullSave() {
         List<ListItem> returnData = new ArrayList<>();
+        int numComplete = 0;
         for (int i = 0; i < size; i++) {
             ListItem current = data.get(i);
             prefs.edit().putString(ID + "Text" + i, current.getText()).apply();
             prefs.edit().putBoolean(ID + "Bool" + i, current.isChecked()).apply();
+            if(current.isChecked()){
+                numComplete++;
+            }
             //returnData.add(current);
         }
         getIntent().putExtra("Size", size);
+        prefs.edit().putInt(ID+"NumComplete",numComplete).apply();
         prefs.edit().putInt(ID + "Size", size).apply();
         prefs.edit().putString(ID + "Title", title).apply();
         setResult(RESULT_OK, getIntent());
@@ -235,6 +243,12 @@ public class ListInterface extends AppCompatActivity {
                             int size = data.size();
                             data.clear();
                             adapter.notifyItemRangeRemoved(0, size);
+                            for (int i = 0; i < size ; i++) {
+                                remove(i);
+                            }
+                            prefs.edit().remove(ID+"Size").apply();
+                            prefs.edit().remove(ID+"Title").apply();
+                            changeTitleDialog();
                             //prefs.edit().clear().apply();
                         }
                     }).show();
