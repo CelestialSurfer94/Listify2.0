@@ -27,7 +27,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
             card_view:cardBackgroundColor="#548ec4"
-            card_view:cardCornerRadius="4dp"
+            card_view:cardCornerRadius="1dp"
             card_view:theme="@style/Base.ThemeOverlay.AppCompat.Light">
 
             <RelativeLayout
@@ -39,7 +39,7 @@
                     android:layout_width="47dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="left"
                     android:gravity="top"
                     android:maxLines="1"
@@ -58,23 +58,11 @@
                     android:textColor="#ffffff" />
 
                 <TextView
-                    android:id="@+id/main_text1View"
-                    android:layout_width="131dp"
+                    android:id="@+id/numberCompleted"
+                    android:layout_width="54dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:padding="10dp"
-                    android:textColor="#ffffff" />
-
-                <TextView
-                    android:id="@+id/main_numberCompleted"
-                    android:layout_width="131dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:maxLines="1"

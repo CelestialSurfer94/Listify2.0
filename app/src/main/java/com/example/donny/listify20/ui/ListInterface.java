@@ -41,13 +41,13 @@ public class ListInterface extends AppCompatActivity {
     private int ID;
     private int size;
     private String title;
+    private boolean allChecked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        allChecked = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         data = new ArrayList<>();
         recView = (RecyclerView) findViewById(R.id.rec_list_activity);
         adapter = new RecAdapter(this, data, this);
@@ -59,8 +59,6 @@ public class ListInterface extends AppCompatActivity {
         setTitle(title);
         if (getIntent().getBooleanExtra("firstStart", false)) {
             changeTitleDialog();
-            //prefs.edit().putString(ID + "Title", getTitle().toString()).apply();
-            //tempSave();
         }
 
         for (int i = 0; i < size; i++) { //grab all saved items in list
@@ -70,31 +68,7 @@ public class ListInterface extends AppCompatActivity {
             data.add(current);
             adapter.notifyItemInserted(i);
         }
-
-
-        toolbar.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                changeTitleDialog();
-            }
-        });
-
-        //
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_new_item);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                add();
-            }
-        });
-
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(adapter);
-        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recView);
-        recView.setAdapter(adapter);
-        linearLayoutManager = new LinearLayoutManager(this);
-        recView.setLayoutManager(linearLayoutManager);
+        setupAdapters();
     }
 
     public void add() {
@@ -143,8 +117,11 @@ public class ListInterface extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Insert list name");
 
-        // Set up the input
+        // Set up the input field
         final EditText input = new EditText(this);
+        if(!title.equals("NEW LIST!!")){
+            input.setText(title);
+        }
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
@@ -153,7 +130,7 @@ public class ListInterface extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                title = input.getText().toString();
+                title = input.getText().toString().trim();
                 prefs.edit().putString(ID+"Title",title).apply();
                 setTitle(title);
             }
@@ -173,7 +150,7 @@ public class ListInterface extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
-                    title = input.getText().toString();
+                    title = input.getText().toString().trim();
                     setTitle(title);
                     prefs.edit().putString(ID+"Title",title).apply();
                     dialog.cancel();
@@ -233,7 +210,7 @@ public class ListInterface extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        //reset action
         if (id == R.id.action_reset) {
             Snackbar.make(findViewById(android.R.id.content), "Are you sure you want to reset?", Snackbar.LENGTH_LONG)
                     .setAction("YES!", new View.OnClickListener() {
@@ -253,6 +230,43 @@ public class ListInterface extends AppCompatActivity {
                         }
                     }).show();
         }
+
+        if(id == R.id.action_toggle_check){
+            int numChecks = data.size();
+            for (int i = 0; i < numChecks; i++) {
+                adapter.getData().get(i).setChecked(allChecked);
+                prefs.edit().putBoolean(id+"Bool" +i,allChecked).apply();
+            }
+            allChecked = !allChecked;
+            adapter.notifyDataSetChanged();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setupAdapters(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeTitleDialog();
+            }
+        });
+
+        //
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_new_item);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                add();
+            }
+        });
+
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(adapter);
+        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recView);
+        recView.setAdapter(adapter);
+        linearLayoutManager = new LinearLayoutManager(this);
+        recView.setLayoutManager(linearLayoutManager);
     }
 }

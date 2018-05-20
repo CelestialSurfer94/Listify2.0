@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="@string/action_reset"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_toggle_check"
+        android:orderInCategory="110"
+        android:title="Turn all checks on/off"
+        app:showAsAction="never" />
 </menu>

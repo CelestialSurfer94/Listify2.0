@@ -62,8 +62,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
                 ((Activity) context).startActivityForResult(intent,pos);
             }
         });
-        holder.test.setText("Items: "+ data.get(position).size());
-        holder.numberCompleted.setText("Completed: " +prefs.getInt(position+"NumComplete",0));
+        //holder.numberCompleted.setText("Completed: " +prefs.getInt(position+"NumComplete",0));
+        holder.numberCompleted.setText(prefs.getInt(position+"NumComplete",0)+"/" + prefs.getInt(position+"Size",0));
+
     }
 
     public void remove(int position){
@@ -153,14 +154,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView listNumber;
-        TextView test;
         TextView numberCompleted;
         public MyViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.main_textView);
             listNumber = (TextView)itemView.findViewById(R.id.main_listNumber);
-            test = (TextView)itemView.findViewById(R.id.main_text1View);
-            numberCompleted = (TextView)itemView.findViewById(R.id.main_numberCompleted);
+            numberCompleted = (TextView)itemView.findViewById(R.id.numberCompleted);
         }
     }
 }

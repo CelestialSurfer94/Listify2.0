@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -127,8 +128,10 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                     data.get(getAdapterPosition()).setChecked(isChecked);
                     if(isChecked) {
                         text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        text.setTextColor(Color.parseColor("#0bd2e8"));
                     } else {
                         text.setPaintFlags(text.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                        text.setTextColor(Color.parseColor("#000000"));
                     }
                     listInterface.saveSingle(pos); //TODO change to only update the current item, not the entire list here
 
