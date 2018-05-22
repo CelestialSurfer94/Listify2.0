@@ -71,14 +71,11 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         current.setFocused(false);
     }
 
-    public void add(ListItem item){
-        //data.add(item);
-        if(item.isFocused()){
-        }
-        Toast.makeText(listInterface, "recAdapter Add was called", Toast.LENGTH_SHORT).show();
-        //holder.text.requestFocus();
-        //listInterface.tempSave();
+    public void add(ListItem item, int pos){
+        data.add(pos, item);
+        listInterface.saveSingle(pos);
     }
+
 
     public void remove(int position){
         data.remove(position);

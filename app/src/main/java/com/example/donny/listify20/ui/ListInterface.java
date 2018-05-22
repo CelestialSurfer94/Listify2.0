@@ -107,12 +107,26 @@ public class ListInterface extends AppCompatActivity {
         //tempSave();
     }
 
-    public void remove(int pos) {
+    public void remove(final int pos) {
+        final String text = prefs.getString(ID+"Text"+pos,"");
+        final Boolean bool = prefs.getBoolean(ID+"Bool"+pos,false);
         prefs.edit().remove(ID + "Text" +pos).apply();
         prefs.edit().remove(ID + "Bool" + pos).apply();
-        prefs.edit().putInt(ID+"Size",adapter.getItemCount()).apply();
         size--;
+        Snackbar.make(findViewById(R.id.clayout), "Undo remove?", Snackbar.LENGTH_LONG)
+                .setAction("YES!", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ListItem removed = new ListItem(text,bool);
+                        adapter.add(removed, pos);
+                        size++;
+                        saveSingle(pos);
+                        adapter.notifyItemInserted(pos);
+                    }
+                }).show();
+        prefs.edit().putInt(ID+"Size",adapter.getItemCount()).apply();
     }
+
 
     @Override
     public void onBackPressed() {
