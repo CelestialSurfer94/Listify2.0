@@ -32,6 +32,7 @@ public class ListItem {
 
     }
 
+
     public void setText(String title) {
         this.text = title;
     }

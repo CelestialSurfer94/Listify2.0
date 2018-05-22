@@ -81,7 +81,10 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         data.remove(position);
         notifyItemRemoved(position);
         listInterface.remove(position);
+    }
 
+    public void remove1(int pos){
+        data.remove(pos);
     }
     public boolean onItemMove(int fromPosition, int toPosition) {
         //Log.v("", "Log position" + fromPosition + " " + toPosition);
@@ -147,8 +150,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                     if(actionId == EditorInfo.IME_ACTION_DONE){
                         //listInterface.add();
-                        text.clearFocus();
-
+                        listInterface.hideKb();
                         return true;
                     }
                     return true;

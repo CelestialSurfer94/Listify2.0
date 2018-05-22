@@ -34,6 +34,7 @@ import com.example.donny.listify20.adapter.ItemTouchHelperCallback;
 import com.example.donny.listify20.adapter.RecAdapter;
 import com.example.donny.listify20.model.ListItem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +95,7 @@ public class ListInterface extends AppCompatActivity {
         int offset = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 - linearLayoutManager.findFirstCompletelyVisibleItemPosition();
         int pos = data.size() - 1;
+        item.setPos(pos);
         recView.smoothScrollToPosition(Math.min(pos + offset + 1, adapter.getItemCount()));
         //getIntent().putExtra(ID + "Size", adapter.getItemCount());
         prefs.edit().putInt(ID + "Size", adapter.getItemCount()).apply();
@@ -107,13 +109,21 @@ public class ListInterface extends AppCompatActivity {
         //tempSave();
     }
 
+    public void hideKb(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
     public void remove(final int pos) {
         final String text = prefs.getString(ID+"Text"+pos,"");
         final Boolean bool = prefs.getBoolean(ID+"Bool"+pos,false);
         prefs.edit().remove(ID + "Text" +pos).apply();
         prefs.edit().remove(ID + "Bool" + pos).apply();
         size--;
-        Snackbar.make(findViewById(R.id.clayout), "Undo remove?", Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.rec_list_activity), "Undo remove?", Snackbar.LENGTH_SHORT)
                 .setAction("YES!", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -127,15 +137,16 @@ public class ListInterface extends AppCompatActivity {
         prefs.edit().putInt(ID+"Size",adapter.getItemCount()).apply();
     }
 
+    public void removeMultiple(int pos){
+        prefs.edit().remove(ID + "Text" +pos).apply();
+        prefs.edit().remove(ID + "Bool" + pos).apply();
+        size--;
+        adapter.remove1(pos);
+    }
+
 
     @Override
     public void onBackPressed() {
-        View v = this.getCurrentFocus();
-        /*if (v != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-        */
         saveAndExit();
     }
 
@@ -228,7 +239,7 @@ public class ListInterface extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.listmenu, menu);
         return true;
     }
 
@@ -268,6 +279,24 @@ public class ListInterface extends AppCompatActivity {
             }
             allChecked = !allChecked;
             adapter.notifyDataSetChanged();
+        }
+
+        if(id == R.id.delete_checked){
+            Snackbar.make(findViewById(R.id.rec_list_activity), "Are you sure you want to remove all checked?", Snackbar.LENGTH_SHORT)
+                    .setAction("YES!", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            for (int i = 0; i < data.size(); i++) {
+                                ListItem cur = data.get(i);
+                                if(cur.isChecked()){
+                                    removeMultiple(i);
+                                    i--;
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+                    }).show();
+            prefs.edit().putInt(ID+"Size",adapter.getItemCount()).apply();
         }
         return super.onOptionsItemSelected(item);
     }
