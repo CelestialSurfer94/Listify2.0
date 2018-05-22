@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -41,7 +42,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
 
     private final LayoutInflater inflator;
     private List<ListItem> data;
-    private MyViewHolder holder;
+    public MyViewHolder holder;
     private ListInterface listInterface;
 
 
@@ -71,10 +72,11 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
     }
 
     public void add(ListItem item){
-        data.add(item);
+        //data.add(item);
         if(item.isFocused()){
         }
         Toast.makeText(listInterface, "recAdapter Add was called", Toast.LENGTH_SHORT).show();
+        //holder.text.requestFocus();
         //listInterface.tempSave();
     }
 
@@ -102,6 +104,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         }
         return true;
     }
+
 
 
     @Override
@@ -133,7 +136,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                         text.setPaintFlags(text.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                         text.setTextColor(Color.parseColor("#000000"));
                     }
-                    listInterface.saveSingle(pos); //TODO change to only update the current item, not the entire list here
+                    listInterface.saveSingle(pos);
 
                 }
             });
@@ -146,14 +149,15 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 @Override
                 public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                     if(actionId == EditorInfo.IME_ACTION_DONE){
-                        //Toast.makeText(textView.getContext(), "TEST", Toast.LENGTH_SHORT).show();
-                        listInterface.add();
-                        //listInterface.tempSave(); //TODO same as above
+                        //listInterface.add();
+                        text.clearFocus();
+
                         return true;
                     }
                     return true;
                 }
             });
+
         }
     }
 

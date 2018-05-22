@@ -3,6 +3,7 @@ package com.example.donny.listify20.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +20,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +47,7 @@ public class ListInterface extends AppCompatActivity {
     private int size;
     private String title;
     private boolean allChecked;
+    private boolean TEST1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +77,14 @@ public class ListInterface extends AppCompatActivity {
         setupAdapters();
     }
 
+
     public void add() {
+        //keyboard management
+        View curView = this.getCurrentFocus();
+        if (curView != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(curView, 0); //TODO
+        }
         ListItem item = new ListItem("", false);
         item.setFocused(true);
         data.add(item);
@@ -84,14 +97,12 @@ public class ListInterface extends AppCompatActivity {
         recView.smoothScrollToPosition(Math.min(pos + offset + 1, adapter.getItemCount()));
         //getIntent().putExtra(ID + "Size", adapter.getItemCount());
         prefs.edit().putInt(ID + "Size", adapter.getItemCount()).apply();
+        TEST1 = false;
 
-        //keyboard management
-        View curView = this.getCurrentFocus();
-        if (curView != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(curView, 0); //TODO
-        }
         //prefs.edit().putInt(ID +"numItems", adapter.getItemCount()).apply();
+
+
+
         size++;
         //tempSave();
     }
@@ -106,12 +117,16 @@ public class ListInterface extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         View v = this.getCurrentFocus();
-        if (v != null) {
+        /*if (v != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
+        */
         saveAndExit();
     }
+
+
+
 
     public void changeTitleDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -268,5 +283,33 @@ public class ListInterface extends AppCompatActivity {
         recView.setAdapter(adapter);
         linearLayoutManager = new LinearLayoutManager(this);
         recView.setLayoutManager(linearLayoutManager);
+        final View test = findViewById(R.id.rec_list_activity);
+        final View editText = findViewById(R.id.editText);
+        //View curFocus = getCurrentFocus();
+        test.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                test.getWindowVisibleDisplayFrame(r);
+                int screenHeight = test.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
+                    TEST1 = true; //todo clean this up eventually lol
+                }
+                else {
+                    // keyboard is closed
+                    String test = getCurrentFocus().toString();
+                    test.contains("EditText");
+                    if(test.contains("EditText") && TEST1){
+                        getCurrentFocus().clearFocus();
+                    }
+                }
+            }
+        });
+
     }
 }

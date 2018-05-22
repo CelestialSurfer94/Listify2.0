@@ -35,6 +35,8 @@
             android:imeOptions="actionDone"
             android:inputType="text"
             android:maxLines="1"
+            android:clickable="true"
+            android:textCursorDrawable="@null"
             android:textColor="@color/cardview_dark_background" />
 
     </RelativeLayout>
