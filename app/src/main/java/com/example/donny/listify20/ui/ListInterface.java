@@ -95,7 +95,6 @@ public class ListInterface extends AppCompatActivity {
         int offset = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 - linearLayoutManager.findFirstCompletelyVisibleItemPosition();
         int pos = data.size() - 1;
-        item.setPos(pos);
         recView.smoothScrollToPosition(Math.min(pos + offset + 1, adapter.getItemCount()));
         //getIntent().putExtra(ID + "Size", adapter.getItemCount());
         prefs.edit().putInt(ID + "Size", adapter.getItemCount()).apply();

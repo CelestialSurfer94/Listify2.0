@@ -68,20 +68,37 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
     }
 
     public void remove(int position){
-        ArrayList<ListItem> cur = data.remove(position);
-        int curSize = cur.size();
-        for (int i = 0; i <curSize ; i++) {
-            prefs.edit().remove(position+"Text"+i).apply();
-            prefs.edit().remove(position+"Bool"+i).apply();
-
-
+       prefs.edit().clear().apply();
+       ArrayList<ListItem> removedList = data.remove(position);
+       titles.remove(position);
+       int size = data.size();
+       for (int i = 0; i < size; i++) {
+           saveList(i);
         }
-        prefs.edit().remove(position+"Size").apply();
-        prefs.edit().remove(position+"Title").apply();
-        prefs.edit().putInt("numLists",getItemCount()).apply();
-        titles.remove(position);
-        notifyItemRemoved(position);
+
+        notifyDataSetChanged();
+        prefs.edit().putInt("numLists",size).apply();
         //notifyItemRangeChanged(position,getItemCount());
+    }
+
+    public void saveList(int ID){
+            ArrayList<ListItem> curList = data.get(ID);
+            int numComplete = 0;
+            int size = curList.size();
+            for (int i = 0; i < size; i++) {
+                ListItem current = curList.get(i);
+                prefs.edit().putString(ID + "Text" + i, current.getText()).apply();
+                prefs.edit().putBoolean(ID + "Bool" + i, current.isChecked()).apply();
+                if(current.isChecked()){
+                    numComplete++;
+                }
+                //returnData.add(current);
+            }
+            //getIntent().putExtra("Size", size);
+            prefs.edit().putInt(ID+"NumComplete",numComplete).apply();
+            prefs.edit().putInt(ID + "Size", size).apply();
+            prefs.edit().putString(ID + "Title", titles.get(ID)).apply();
+
     }
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (fromPosition < data.size() && toPosition < data.size()) {
@@ -107,7 +124,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder> 
         int fromSize = data.get(fromPosition).size();
         int toSize = data.get(toPosition).size();
 
-        //wait does this work?
+        //
         for (int i = 0; i < toSize; i++) {
             ListItem cur = toList.get(i);
             prefs.edit().putString(toPosition+"Text"+i,cur.getText()).apply();

@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra("firstStart", true);
         i.putExtra("requestCode", numLists);
         titles.add("New List!!");
+        numLists = prefs.getInt("numLists",0);
         prefs.edit().putInt("numLists",++numLists).apply();
         startActivityForResult(i, numLists -1);
     }
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
             String title = prefs.getString(requestCode + "Title", "uh oh?");
             titles.set(requestCode, title);
+            numLists = prefs.getInt("numLists",0);
             Bundle Mbundle = data.getExtras();
             int size = Mbundle.getInt("Size");
             //int size = data.getIntExtra("Size",0);
