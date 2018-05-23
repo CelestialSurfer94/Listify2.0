@@ -86,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
     //add new list to main activity
     public void addNewList() { //addNewList new list to view
         Intent i = new Intent(this, ListInterface.class);
+        numLists = prefs.getInt("numLists",0);
         i.putExtra("firstStart", true);
         i.putExtra("requestCode", numLists);
         titles.add("New List!!");
-        numLists = prefs.getInt("numLists",0);
         prefs.edit().putInt("numLists",++numLists).apply();
-        startActivityForResult(i, numLists -1);
+        startActivityForResult(i, numLists -1); //0 indexed
     }
 
     @Override
